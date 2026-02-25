@@ -1,0 +1,40 @@
+<h2>Create Session</h2>
+
+<form #f="ngForm" (ngSubmit)="submit(f.form.valid)">
+  <div>
+    <label>Title *</label>
+    <input name="title" [(ngModel)]="model.title" required #title="ngModel" />
+    @if (title.invalid && title.touched) {
+      <small style="color: red">Required</small>
+    }
+  </div>
+
+  <div>
+    <label>Abstract *</label>
+    <input name="abstract" [(ngModel)]="model.abstract" required #abs="ngModel" />
+    @if (abs.invalid && abs.touched) {
+      <small style="color: red">Required</small>
+    }
+  </div>
+
+  <div>
+    <label>Track *</label>
+    <select name="trackId" [(ngModel)]="model.trackId" required>
+      @for (t of tracks; track t.id) {
+        <option [ngValue]="t.id">{{ t.name }}</option>
+      }
+    </select>
+  </div>
+
+  <div>
+    <label>Start time *</label>
+    <input type="datetime-local" name="startTime" [(ngModel)]="model.startTime" required />
+  </div>
+
+  <div>
+    <label>End time *</label>
+    <input type="datetime-local" name="endTime" [(ngModel)]="model.endTime" required />
+  </div>
+
+  <button type="submit" [disabled]="f.invalid">Create</button>
+</form>

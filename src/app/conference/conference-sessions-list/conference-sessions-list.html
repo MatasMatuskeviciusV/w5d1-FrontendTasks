@@ -1,0 +1,13 @@
+<h2>Sessions</h2>
+
+<ul>
+  @for (s of sessions; track s.id) {
+    <li [appHighlightOnHover]="'#e7f5ff'">
+      <strong>{{ s.title }}</strong>
+      <div>Track: {{ s.track?.name ?? '—' }}</div>
+      <div>{{ s.startTime }} - {{ s.endTime }}</div>
+
+      <button type="button" (click)="deleteSession.emit(s.id)">Delete</button>
+    </li>
+  }
+</ul>
