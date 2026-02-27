@@ -1,39 +1,31 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import type { TrackRead } from '../../models/track.model';
-import type { SessionCreate } from '../../models/session.model';
+import { ConferenceStoreService } from '../conference-store.service';
+import { SessionCreate } from '../../models/session.model';
 
 @Component({
   selector: 'app-conference-form',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './conference-form.html',
-  styleUrl: './conference-form.css',
 })
 export class ConferenceForm {
-  @Input() tracks: TrackRead[] = [];
-  @Output() createSession = new EventEmitter<SessionCreate>();
+  private readonly store = inject(ConferenceStoreService);
 
-  model: SessionCreate = {
-    title: '',
-    abstract: '',
-    startTime: '',
-    endTime: '',
-    trackId: 1,
-  };
+  readonly form = this.store.form;
+  readonly tracks = this.store.tracks;
+
+  update<K extends keyof SessionCreate>(key: K, value: SessionCreate[K]): void {
+    this.store.patchForm({ [key]: value } as Partial<SessionCreate>);
+  }
+
+  updateTrackId(raw: unknown): void {
+    const trackId = Number(raw);
+    this.store.patchForm({ trackId });
+  }
 
   submit(isValid: boolean): void {
     if (!isValid) return;
-
-    this.createSession.emit({ ...this.model });
-
-    this.model = {
-      title: '',
-      abstract: '',
-      startTime: '',
-      endTime: '',
-      trackId: this.model.trackId,
-    };
+    this.store.submitForm();
   }
 }

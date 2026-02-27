@@ -1,17 +1,20 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject } from '@angular/core';
+import { ConferenceStoreService } from '../conference-store.service';
 import { HighlightOnHover } from '../highlight-on-hover/highlight-on-hover';
-
-import type { SessionRead } from '../../models/session.model';
+import { SortSessionsByStartPipe } from '../pipes/sort-sessions-by-start.pipe';
 
 @Component({
   selector: 'app-conference-sessions-list',
   standalone: true,
-  imports: [CommonModule, HighlightOnHover],
+  imports: [HighlightOnHover, SortSessionsByStartPipe],
   templateUrl: './conference-sessions-list.html',
-  styleUrl: './conference-sessions-list.css',
 })
 export class ConferenceSessionsList {
-  @Input() sessions: SessionRead[] = [];
-  @Output() deleteSession = new EventEmitter<number>();
+  private readonly store = inject(ConferenceStoreService);
+
+  readonly sessions = this.store.sessions;
+
+  deleteSession(id: number): void {
+    this.store.deleteSession(id);
+  }
 }

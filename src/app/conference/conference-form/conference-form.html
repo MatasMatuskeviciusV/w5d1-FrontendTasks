@@ -1,40 +1,65 @@
-<h2>Create Session</h2>
-
 <form #f="ngForm" (ngSubmit)="submit(f.form.valid)">
   <div>
-    <label>Title *</label>
-    <input name="title" [(ngModel)]="model.title" required #title="ngModel" />
+    <label>Title</label><br />
+    <input
+      type="text"
+      name="title"
+      required
+      [ngModel]="form().title"
+      (ngModelChange)="update('title', $event)"
+      #title="ngModel"
+    />
     @if (title.invalid && title.touched) {
-      <small style="color: red">Required</small>
+      <small>Required</small>
     }
   </div>
 
   <div>
-    <label>Abstract *</label>
-    <input name="abstract" [(ngModel)]="model.abstract" required #abs="ngModel" />
-    @if (abs.invalid && abs.touched) {
-      <small style="color: red">Required</small>
+    <label>Abstract</label><br />
+    <textarea
+      name="abstract"
+      required
+      [ngModel]="form().abstract"
+      (ngModelChange)="update('abstract', $event)"
+      #abstract="ngModel"
+    ></textarea>
+    @if (abstract.invalid && abstract.touched) {
+      <small>Required</small>
     }
   </div>
 
   <div>
-    <label>Track *</label>
-    <select name="trackId" [(ngModel)]="model.trackId" required>
-      @for (t of tracks; track t.id) {
+    <label>Start time</label><br />
+    <input
+      type="datetime-local"
+      name="startTime"
+      [ngModel]="form().startTime"
+      (ngModelChange)="update('startTime', $event)"
+    />
+  </div>
+
+  <div>
+    <label>End time</label><br />
+    <input
+      type="datetime-local"
+      name="endTime"
+      [ngModel]="form().endTime"
+      (ngModelChange)="update('endTime', $event)"
+    />
+  </div>
+
+  <div>
+    <label>Track</label><br />
+    <select
+      name="trackId"
+      [ngModel]="form().trackId"
+      (ngModelChange)="updateTrackId($event)"
+    >
+      @for (t of tracks(); track t.id) {
         <option [ngValue]="t.id">{{ t.name }}</option>
       }
     </select>
   </div>
 
-  <div>
-    <label>Start time *</label>
-    <input type="datetime-local" name="startTime" [(ngModel)]="model.startTime" required />
-  </div>
-
-  <div>
-    <label>End time *</label>
-    <input type="datetime-local" name="endTime" [(ngModel)]="model.endTime" required />
-  </div>
-
-  <button type="submit" [disabled]="f.invalid">Create</button>
+  <button type="submit">Create session</button>
 </form>

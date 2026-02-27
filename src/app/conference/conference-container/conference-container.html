@@ -1,21 +1,7 @@
-<h1>Conference</h1>
+<app-conference-form></app-conference-form>
 
-<app-conference-form
-  [tracks]="tracks"
-  (createSession)="handleCreateSession($event)">
-</app-conference-form>
-
-<hr />
-
-<ng-template #emptyState>
+@if (uiState() === 'empty') {
   <p>No sessions yet.</p>
-</ng-template>
-
-@if (sessions.length === 0) {
-  <ng-container [ngTemplateOutlet]="emptyState"></ng-container>
 } @else {
-  <app-conference-sessions-list
-    [sessions]="sessions"
-    (deleteSession)="handleDeleteSession($event)">
-  </app-conference-sessions-list>
+  <app-conference-sessions-list></app-conference-sessions-list>
 }
