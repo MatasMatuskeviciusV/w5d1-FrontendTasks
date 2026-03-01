@@ -1,39 +1,21 @@
 import { Injectable, computed, signal } from '@angular/core';
 import { ConferenceService } from './conference';
-import { SessionCreate, SessionRead } from '../models/session.model';
+import { SessionCreate, SessionRead} from '../models/session.model';
 import { TrackRead } from '../models/track.model';
 import { Observable, tap } from 'rxjs';
 
-const STATIC_TRACKS: TrackRead[] = [
-  { id: 1, name: 'Backend Development' },
-  { id: 2, name: 'Frontend Development' },
-  { id: 3, name: 'Cloud & DevOps' },
-  { id: 4, name: 'Mobile Development' },
-  { id: 5, name: 'Data & AI' },
-];
-
 export type ConferenceUiState = 'empty' | 'filled';
-
-const INITIAL_FORM: SessionCreate = {
-  title: '',
-  abstract: '',
-  startTime: '',
-  endTime: '',
-  trackId: 1,
-};
 
 @Injectable({ providedIn: 'root' })
 export class ConferenceStoreService {
   private readonly _sessions = signal<SessionRead[]>([]);
-  private readonly _tracks = signal<TrackRead[]>(STATIC_TRACKS);
-  private readonly _form = signal<SessionCreate>({ ...INITIAL_FORM });
+  private readonly _tracks = signal<TrackRead[]>([]);
 
   private readonly _error = signal<string>('');
   private readonly _isLoading = signal(false);
 
   readonly sessions = this._sessions.asReadonly();
   readonly tracks = this._tracks.asReadonly();
-  readonly form = this._form.asReadonly();
   readonly error = this._error.asReadonly();
   readonly isLoading = this._isLoading.asReadonly();
 
@@ -57,6 +39,8 @@ export class ConferenceStoreService {
     this._sessions.set(sessions);
 
     this._isLoading.set(true);
+
+    this._tracks.set(this.data.getTracks());
 
     this.data.fetchSessions().subscribe({
       next: (remote) => {
@@ -107,42 +91,27 @@ export class ConferenceStoreService {
     });
   }
 
-  patchForm(patch: Partial<SessionCreate>): void {
-    this._form.update((prev) => ({ ...prev, ...patch }));
+  updateSession(id: number, payload: SessionCreate): Observable<SessionRead> {
+    return this.data.updateSession(id, payload).pipe(
+      tap((updated) => {
+        const trackFromResponse = updated.track;
+        const needsReplacement =
+          !trackFromResponse || !trackFromResponse.name ||
+          trackFromResponse.id !== updated.trackId;
+
+        if (needsReplacement) {
+          const track = this._tracks().find((t) => t.id === updated.trackId);
+          if (track) updated = { ...updated, track };
+        }
+
+        this._sessions.update((prev) =>
+          prev.map((s) => (s.id === id ? { ...s, ...updated } : s))
+        );
+      })
+    );
   }
-
-  resetFormKeepTrack(): void {
-    const keepTrackId = this._form().trackId;
-    this._form.set({ ...INITIAL_FORM, trackId: keepTrackId });
-  }
-
-  submitForm(): void {
-    const payload = this._form();
-    this.addSession(payload);
-    this.resetFormKeepTrack();
-  }
-
-  private _deleteSessionLocally(id: number): void {
-    this._sessions.update((prev) => prev.filter((s) => s.id !== id));
-  }
-
-  private addSession(payload: SessionCreate): void {
-    const current = this._sessions();
-
-    const nextId = current.reduce((max, s) => (s.id > max ? s.id : max), 0) + 1;
-    const track = this._tracks().find((t) => t.id === payload.trackId);
-
-    const newSession: SessionRead = {
-      id: nextId,
-      title: payload.title,
-      abstract: payload.abstract,
-      startTime: payload.startTime,
-      endTime: payload.endTime,
-      trackId: payload.trackId,
-      track: track ? { id: track.id, name: track.name } : undefined,
-      speakers: [],
-    };
-
-    this._sessions.set([newSession, ...current]);
+  
+  getSessionById(id: number): SessionRead | undefined {
+    return this._sessions().find((s) => s.id === id);
   }
 }

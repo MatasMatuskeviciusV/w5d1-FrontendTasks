@@ -1,14 +1,14 @@
 import { Component, inject } from '@angular/core';
-import { ConferenceForm } from '../conference-form/conference-form';
-import { ConferenceSessionsList } from '../conference-sessions-list/conference-sessions-list';
-import { ConferenceStoreService } from '../conference-store.service';
 import { CommonModule } from '@angular/common';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { ConferenceStoreService } from '../conference-store.service';
 
 @Component({
   selector: 'app-conference-container',
   standalone: true,
-  imports: [CommonModule, ConferenceForm, ConferenceSessionsList],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './conference-container.html',
+  styleUrls: ['./conference-container.css'],
 })
 export class ConferenceContainer {
   private readonly store = inject(ConferenceStoreService);

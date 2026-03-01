@@ -4,23 +4,34 @@
   </div>
 }
 
+<div class="nav-wrapper">
+  <nav class="nav-card">
+    <a
+      routerLink="/sessions"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="nav-link"
+    >
+      Sessions
+    </a>
+
+    <a
+      routerLink="/sessions/new"
+      routerLinkActive="active"
+      class="nav-link"
+    >
+      New Session
+    </a>
+  </nav>
+</div>
+
 @if (isLoading()) {
   <div class="loading-container">
     <div class="spinner"></div>
     <p>Loading sessions…</p>
   </div>
-}
-
-@if (isEmpty()) {
-  <div class="empty-state">
-    <p>No sessions found. Create one to get started!</p>
-  </div>
-}
-
-<app-conference-form></app-conference-form>
-
-@if (!isLoading() && !isEmpty()) {
-  <app-conference-sessions-list></app-conference-sessions-list>
+} @else {
+  <router-outlet></router-outlet>
 }
 
 <style>
@@ -32,6 +43,17 @@
     border-left: 4px solid #c62828;
     margin-bottom: 1rem;
     border-radius: 4px;
+  }
+
+  nav {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .active {
+    font-weight: 600;
+    text-decoration: underline;
   }
 
   .loading-container {
@@ -57,12 +79,5 @@
     to {
       transform: rotate(360deg);
     }
-  }
-
-  .empty-state {
-    text-align: center;
-    padding: 2rem;
-    color: #666;
-    font-size: 1.1rem;
   }
 </style>

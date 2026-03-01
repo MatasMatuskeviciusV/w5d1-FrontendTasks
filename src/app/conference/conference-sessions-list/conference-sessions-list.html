@@ -1,11 +1,31 @@
-<ul>
-  @for (s of (sessions() | sortSessionsByStart); track s.id) {
-    <li [appHighlightOnHover]="'#e7f5ff'">
-      <div><strong>{{ s.title }}</strong></div>
-      <div>Track: {{ s.track?.name ?? '—' }}</div>
-      <div>{{ s.startTime }} - {{ s.endTime }}</div>
+<div class="wrapper">
+  <div class="card">
+    <div class="title">Sessions</div>
 
-      <button type="button" (click)="deleteSession(s.id)">Delete</button>
-    </li>
-  }
-</ul>
+    @if (sessions().length === 0) {
+      <div class="empty-state">
+        <p>No sessions found. Create one to get started!</p>
+      </div>
+    } @else {
+      <ul>
+        @for (s of (sessions() | sortSessionsByStart); track s.id) {
+          <li [appHighlightOnHover]="'#e7f5ff'">
+            <div>
+              <strong>
+                <a [routerLink]="['/sessions', s.id]">{{ s.title }}</a>
+              </strong>
+            </div>
+
+            <div class="meta">Track: {{ s.track?.name ?? '—' }}</div>
+            <div class="meta">{{ s.startTime }} - {{ s.endTime }}</div>
+
+            <div class="actions">
+              <button class="btn" type="button" [routerLink]="['/sessions', s.id]">Details</button>
+              <button class="btn" type="button" (click)="deleteSession(s.id)">Delete</button>
+            </div>
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</div>

@@ -1,93 +1,62 @@
-<form [formGroup]="form" (ngSubmit)="submit()">
-  @if (errorMessage) {
-    <div class="error">
-      <strong>Error:</strong> {{ errorMessage }}
-    </div>
-  }
+<div class="wrapper">
+  <div class="flip-card__inner">
+    <div class="flip-card__front">
+      <div class="title">{{ isEditMode() ? 'Edit session' : 'Create session' }}</div>
 
-  @if (successMessage) {
-    <div class="success">
-      {{ successMessage }}
-    </div>
-  }
-
-  <div>
-    <label>Title</label><br />
-    <input
-      type="text"
-      formControlName="title"
-      placeholder="Session title"
-    />
-    @if (form.get('title')?.invalid && form.get('title')?.touched) {
-      <small class="error">Title is required (min 3 chars)</small>
-    }
-  </div>
-
-  <div>
-    <label>Abstract</label><br />
-    <textarea
-      formControlName="abstract"
-      placeholder="Session description"
-      rows="4"
-    ></textarea>
-    @if (form.get('abstract')?.invalid && form.get('abstract')?.touched) {
-      <small class="error">Abstract is required (min 10 chars)</small>
-    }
-  </div>
-
-  <div>
-    <label>Start time</label><br />
-    <input type="datetime-local" formControlName="startTime" />
-    @if (form.get('startTime')?.invalid && form.get('startTime')?.touched) {
-      <small class="error">Start time is required</small>
-    }
-  </div>
-
-  <div>
-    <label>End time</label><br />
-    <input type="datetime-local" formControlName="endTime" />
-    @if (form.get('endTime')?.invalid && form.get('endTime')?.touched) {
-      <small class="error">End time is required</small>
-    }
-  </div>
-
-  <div>
-    <label>Track</label><br />
-    <select formControlName="trackId">
-      <option value="" disabled>Select a track</option>
-      @for (t of tracks(); track t.id) {
-        <option [ngValue]="t.id">{{ t.name }}</option>
+      @if (errorMessage) {
+        <div class="error">
+          <strong>Error:</strong> {{ errorMessage }}
+        </div>
       }
-    </select>
-    @if (form.get('trackId')?.invalid && form.get('trackId')?.touched) {
-      <small class="error">Track is required</small>
-    }
+
+      @if (successMessage) {
+        <div class="success">
+          {{ successMessage }}
+        </div>
+      }
+
+      <form class="flip-card__form" [formGroup]="form" (ngSubmit)="submit()">
+        <input
+          class="flip-card__input"
+          type="text"
+          formControlName="title"
+          placeholder="Session title"
+        />
+
+        <textarea
+          class="flip-card__input"
+          formControlName="abstract"
+          placeholder="Session description"
+          rows="4"
+        ></textarea>
+
+        <input
+          class="flip-card__input"
+          type="datetime-local"
+          formControlName="startTime"
+        />
+
+        <input
+          class="flip-card__input"
+          type="datetime-local"
+          formControlName="endTime"
+        />
+
+        <select class="flip-card__input" formControlName="trackId">
+          <option value="" disabled>Select a track</option>
+          @for (t of tracks(); track t.id) {
+            <option [ngValue]="t.id">{{ t.name }}</option>
+          }
+        </select>
+
+        <button class="flip-card__btn" type="submit" [disabled]="form.invalid || isSubmitting">
+          @if (isSubmitting) {
+            Saving...
+          } @else {
+            {{ isEditMode() ? 'Save session' : 'Create session' }}
+          }
+        </button>
+      </form>
+    </div>
   </div>
-
-  <button
-    type="submit"
-    [disabled]="form.invalid || isSubmitting"
-  >
-    @if (isSubmitting) {
-      Creating...
-    } @else {
-      Create session
-    }
-  </button>
-</form>
-
-<style>
-  .error {
-    color: #d32f2f;
-    font-size: 0.875rem;
-    margin-top: 0.25rem;
-  }
-
-  .success {
-    color: #388e3c;
-    background-color: #f1f8e9;
-    padding: 0.75rem;
-    border-radius: 4px;
-    margin-bottom: 1rem;
-  }
-</style>
+</div>
